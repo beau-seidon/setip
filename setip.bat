@@ -1,0 +1,320 @@
+::Name: setip.bat
+::Version: 0.3.2
+::Author: Beau Sterling
+::Contact: github.com/beau-seidon
+::Date: 2018.07.18
+::Description:
+::	I wrote this script because I sometimes have to change my IP address
+::	several times per day, to configure and program various BAS devices.
+::	Navigating to the network connections through the explorer can quickly
+::	become quite a tedious chore, so I decided to learn how to create a batch
+::	script to expedite the process.
+::
+::	This script presents the user with a menu, and with the option to set 
+::	a custom static IP address, choose among 5 presets, or reset the network
+::	adapter to DHCP.The adapter is selectable through a submenu. The presets
+::	and adapter names are configured by modifying the script text, which is
+::	an option in the menu.
+::
+::	With the update I have included a script to place the setip.bat file into
+::	the "C:\Windows" directory, which is in the run PATH by default. It can be
+::	called quickly by clicking start, or pressing the "Super" or [Win] key, 
+::	and typing setip, then pressing [Enter]. The file can be placed pretty much 
+::	anywhere else, but the installation path must be changed in the :CONFIG 
+::	subroutine. The address presets and adapter names can be modified in the 
+::	same section.
+::
+::	Please contact me at the email address above if you have any questions,
+::	find any issues, or would like to work together with me to make this 
+::	script fancier and/or more useful. I hope it saves you some effort. Enjoy.
+
+
+@echo off
+	
+
+:CONFIG
+:: configure default values here
+
+	set installation_directory="C:\Windows\setip.bat"
+	
+	set adapter_1="Local Area Connection"
+	set adapter_2="WiFi"
+	
+	set static_1=192.168.1.111
+	set static_2=10.0.0.111
+	set static_3=10.159.102.111
+	set static_4=10.159.38.111
+	set static_5=10.15.90.111
+	
+	set netmask=255.255.255.0
+	
+	set gateway_1=192.168.1.1
+	set gateway_2=10.0.0.1
+	set gateway_3=10.159.102.1
+	set gateway_4=10.159.38.1
+	set gateway_5=10.15.90.1
+
+	set selected_adapter=%adapter_1%
+
+
+:SPLASH
+
+	echo ********************************************************************
+	echo.                                                                    
+	echo                                     ho                              
+	echo            .                       :M+          /.                  
+	echo        -odSS:                      dN'          ds                  
+	echo     -smMMMMd-          ._     :ssshMmmyyy              -oo+_        
+	echo    hMMMNy`          .odMNMs  :MMMMMMNddyy       ..    oMMMMMd.      
+	echo    dMMNs+::.       dNMt..mMN     :dm`           +h   'mm   oNh      
+	echo    `smNNNNNMNhp    NMNhoso:       sm            oN.  :m-   -dm      
+	echo            `MNMo   lNho           .Ns.    .,    +M.  ;NyydNMMy      
+	echo          ..;NNMm    +NMMMmt:       +MMNmmNN+    :N.  mMMMMNd+       
+	echo       mMMMMMMMm:     `:++:`         :ymdho'      :   :Nh-           
+	echo       'ossoo++'                                      :No            
+	echo                                                      :Mo            
+	echo                                                      :M+            
+	echo                                                      `h/            
+	echo                                                            (v 0.3.2)
+	echo ********************************************************************
+
+	
+:MAIN_MENU
+
+	echo.
+	echo.
+	echo ***MAIN MENU***
+	echo.
+	echo Note: Changes will be applied to adapter with name %selected_adapter%
+	echo.
+	echo Choose one of the following:
+	echo     [a] Set custom static IP
+	echo     [b] Use DHCP
+	echo     -------------------------------------------------
+	echo     [c] Change adapter
+	echo     -------------------------------------------------
+	echo     [d] Edit script configuration
+	echo     -------------------------------------------------
+	echo     [e] Set static IP to preset 1 (%static_1%/24)
+	echo     [f] Set static IP to preset 2 (%static_2%/24)
+	echo     [g] Set static IP to preset 3 (%static_3%/24)
+	echo     [h] Set static IP to preset 4 (%static_4%/24)
+	echo     [i] Set static IP to preset 5 (%static_5%/24)
+	echo     -------------------------------------------------
+	echo     [j] Control panel: Network Connections
+	echo     [k] Run ipconfig
+	echo     -------------------------------------------------
+	echo     [exit] Terminate script
+
+	
+:INPUT
+
+	echo.
+	set /P sel="Whatcha wanna do?: "
+
+	for %%? in (a) do if /i "%sel%"=="%%?" goto CUSTOM_STATIC
+	
+	for %%? in (b) do if /i "%sel%"=="%%?" goto DHCP_RESET
+	
+	for %%? in (c) do if /i "%sel%"=="%%?" goto ADAPTER_MENU
+	
+	for %%? in (d) do if /i "%sel%"=="%%?" (
+		echo.
+		echo WARNING: Modifying this script may break functionality, continue at your own risk...
+		goto CONFIRM_EDIT
+	)
+	
+	for %%? in (e) do if /i "%sel%"=="%%?" goto PRESET_1
+	
+	for %%? in (f) do if /i "%sel%"=="%%?" goto PRESET_2
+	
+	for %%? in (g) do if /i "%sel%"=="%%?" goto PRESET_3
+	
+	for %%? in (h) do if /i "%sel%"=="%%?" goto PRESET_4
+
+	for %%? in (i) do if /i "%sel%"=="%%?" goto PRESET_5
+	
+	for %%? in (j) do if /i "%sel%"=="%%?" (
+		start control netconnections
+		goto MAIN_MENU
+	)
+
+	for %%? in (k) do if /i "%sel%"=="%%?" (
+		echo.
+		ipconfig
+		goto MAIN_MENU
+	)
+
+	for %%? in (ipconfig) do if /i "%sel%"=="%%?" (
+		echo.
+		ipconfig
+		goto MAIN_MENU
+	)
+
+	for %%? in (exit) do if /i "%sel%"=="%%?" goto FAREWELL
+
+	echo huh?
+
+	goto INPUT
+
+	
+:CUSTOM_STATIC 
+
+	@echo off
+
+	echo.
+	echo Static IP Address:
+	set /p ip_address=
+
+	echo.
+	echo Subnet Mask:
+	set /p subnet_mask=
+
+	echo.
+	echo Default Gateway:
+	set /p default_gateway=
+
+	netsh interface ip set address %selected_adapter% static %ip_address% %subnet_mask% %default_gateway%
+
+	echo IP address has been modified. Run ipconfig to verify.
+
+	goto MAIN_MENU
+	
+	
+:DHCP_RESET
+
+	@echo off
+
+	echo.
+	netsh int ip set address name = %selected_adapter% source = dhcp
+	ipconfig /renew
+
+	goto MAIN_MENU	
+	
+	
+:ADAPTER_MENU
+
+	echo.
+	echo Available network adapters: 
+	echo      [1] %adapter_1%
+	echo      [2] %adapter_2%
+	
+	
+:CHANGE_ADAPTER
+	
+	echo.
+	set /P ad= "Pick one: "
+	
+	for %%? in (1) do (
+		if /i "%ad%"=="%%?" (
+			set selected_adapter=%adapter_1%
+			echo Adapter selected!
+			goto MAIN_MENU		
+		)
+	)
+	
+	for %%? in (2) do (
+		if /i "%ad%"=="%%?" (
+			set selected_adapter=%adapter_2%
+			echo Adapter selected!
+			goto MAIN_MENU		
+		)
+	)
+
+	echo huh?
+	
+	goto CHANGE_ADAPTER
+	
+	
+:CONFIRM_EDIT
+
+	echo.
+	set /p cont= "Continue? [y/n]: "
+	
+	for %%? in (y) do if /i "%cont%"=="%%?" goto EDIT_CONFIG
+	for %%? in (n) do if /i "%cont%"=="%%?" goto MAIN_MENU
+
+	echo huh?
+	
+	goto CONFIRM_EDIT
+	
+
+:EDIT_CONFIG
+
+	if EXIST %installation_directory% (
+		start notepad %installation_directory%
+
+::		runas /profile /user:administrator %installation_directory%
+
+::		Set objShell = CreateObject("Shell.Application")
+::		objShell.ShellExecute "notepad", "%installation_directory%", "", "runas", 1
+
+		pause
+		
+		exit
+	) else (
+		echo.
+		echo Uh oh... The Script directory is not mapped correctly. 
+		echo You must locate the file and correct the "installation_directory"
+		echo in the CONFIG section for this feature to work. Good luck. 
+		goto MAIN_MENU
+	)
+	
+	
+:PRESET_1
+
+	netsh interface ip set address %selected_adapter% static %static_1% %netmask% %gateway_1%
+
+	echo IP address has been modified. Run ipconfig to verify.
+	
+	goto MAIN_MENU
+	
+	
+:PRESET_2
+
+	netsh interface ip set address %selected_adapter% static %static_2% %netmask% %gateway_2%
+
+	echo IP address has been modified. Run ipconfig to verify.
+	
+	goto MAIN_MENU
+	
+	
+:PRESET_3
+
+	netsh interface ip set address %selected_adapter% static %static_3% %netmask% %gateway_3%
+	
+	echo IP address has been modified. Run ipconfig to verify.
+	
+	goto MAIN_MENU
+	
+	
+:PRESET_4
+
+	netsh interface ip set address %selected_adapter% static %static_4% %netmask% %gateway_4%
+	
+	echo IP address has been modified. Run ipconfig to verify.
+	
+	goto MAIN_MENU
+	
+	
+:PRESET_5
+
+	netsh interface ip set address %selected_adapter% static %static_5% %netmask% %gateway_5%
+	
+	echo IP address has been modified. Run ipconfig to verify.
+	
+	goto MAIN_MENU
+
+	
+:FAREWELL
+
+	echo.
+	echo.
+	echo Share this script with your friends! And your enemies.
+	echo.
+	echo Script will now terminate
+	pause
+	goto END 
+
+
+:END
