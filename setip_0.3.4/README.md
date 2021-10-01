@@ -1,13 +1,30 @@
-NAME:			setip
-VERSION:		0.3.4
-AUTHOR:			Beau Sterling
-DATE:			09/30/2021
-CONTACT:		beau.sterling@se.com
-DESCRIPTION:	batch script for quickly changing your Windows computer's IP address, and some other tools
+NAME:
+
+	setip
+VERSION:
+
+	0.3.4
+	
+AUTHOR:
+
+	Beau Sterling
+	
+DATE:
+	
+	09/30/2021
+	
+CONTACT:
+	
+	beau.seidon@outlook.com
+
+DESCRIPTION:  
+
+	batch script for quickly changing your Windows computer's IP address, and some other tools
 
 
 
 INSTALLATION:
+
 	Run install.bat, follow the prompts.
 	
 	Note: on systems with restricted permissions or 3rd party security software, it may be neccessary do this from within an elevated cmd terminal. 
@@ -17,6 +34,7 @@ INSTALLATION:
 
 
 CHANGE LOG:
+
 	Version 0.3.4
 		Modified styling further. Added ability to ping an IP address or hostname, and ping a range of IP addresses. Responses from active hosts are written to a file.
 		Fixed a bug which caused problems when resetting adapters to DHCP.
@@ -69,6 +87,7 @@ CHANGE LOG:
 
 
 KNOWN ISSUES:
+
 	1. If your LAN adapter name does not match the name specified in the script, eg. "Local Area Connection", you will receive an error message. 
 		To fix this, select edit script from the main menu, and change your adapter name(s) to match those in your control panel. 
 
@@ -81,6 +100,7 @@ KNOWN ISSUES:
 
 
 MOTIVATION:
+
 	The shortest procedure I know of to execute this task, using mouse clicks, is the following:
 
 	1. Right click network icon on the taskbar tray
